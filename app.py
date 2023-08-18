@@ -25,7 +25,10 @@ def index():
     if request.method =="GET":
         return render_template("main_page.html", comments=Comment.query.all())
     ## Otheriwse, POST: used to submit data: data included in request body. When someone clicks button to submit.
-    comments.append(request.form["contents"]) #extracts typed text in textarea from browser’s request with name="contents"
+     #extracts typed text in textarea from browser’s request with name="contents" into the contents attribute of a comment object
+    comment = Comment(content=request.form["contents"])
+    db.session.add(comment)
+    db.session.commit()
     return redirect(url_for("index"))
 
 @app.route('/showdata', methods = ["GET", "POST"])
