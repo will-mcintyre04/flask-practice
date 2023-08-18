@@ -4,12 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
-SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="willymac",
-    password="will'sdb",
-    hostname="willymac.mysql.pythonanywhere-services.com",
-    databasename="willymac$comments",
-)
+from local_settings import SQLALCHEMY_DATABASE_URI
+
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI #stashes database in config settings
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299 #Throw away connections that havent been used for 299 seconds
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -27,7 +23,7 @@ comments = []
 def index():
     ## HTTP method 'GET' indicates request generally, if used to send: data sent directly in URL. For viewing
     if request.method =="GET":
-        return render_template("main_page.html", comments=comments)
+        return render_template("main_page.html", comments=Comment.query.all())
     ## Otheriwse, POST: used to submit data: data included in request body. When someone clicks button to submit.
     comments.append(request.form["contents"]) #extracts typed text in textarea from browser’s request with name="contents"
     return redirect(url_for("index"))
