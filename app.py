@@ -1,8 +1,26 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+    username="willymac",
+    password="will'sdb",
+    hostname="willymac.mysql.pythonanywhere-services.com",
+    databasename="willymac$comments",
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI #stashes database in config settings
+app.config["SQLALCHEMY_POOL_RECYCLE"] = 299 #Throw away connections that havent been used for 299 seconds
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
+class Comment(db.Model): ##Subclass from db.Model
+    __tablename__ = "comments"
+     #Equivalent to sqlalchemy.Column. Luckily extension object db provides access to names in sqlalchemy module.
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(4096))
 comments = []
 
 @app.route('/', methods=["GET", "POST"])
